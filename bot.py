@@ -28,13 +28,13 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 async def on_ready():
     print(f'Logged in as {bot.user.name} ({bot.user.id})')
     print('------')
+
     # Sync all slash commands
     try:
         synced = await bot.tree.sync()
         print(f"Synced {len(synced)} command(s)")
     except Exception as e:
         print(f"Failed to sync commands: {e}")
-
 
 # Context menus cannot be inside classes
 
@@ -54,12 +54,10 @@ async def messageanalysis(interaction: discord.Interaction, message: discord.Mes
     for word in msg.split(' '):
         if not len(word.strip()):
             continue
-        
         if word.strip() in dictionary:
             score += 1
         else:
             print(word)
-
         tot += 1
     score /= tot
     
@@ -83,7 +81,6 @@ async def messageanalysis(interaction: discord.Interaction, message: discord.Mes
     embed.add_field(name="Grammar", value=f"{num_errors} errors ({round(100 * num_errors / tot)}%)")
 
     await interaction.response.send_message(embed=embed)
-    
 
 async def load_cogs():
     for filename in os.listdir('./cogs'):
