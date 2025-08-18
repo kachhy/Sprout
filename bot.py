@@ -72,9 +72,6 @@ async def messageanalysis(interaction: discord.Interaction, message: discord.Mes
         if error.ruleId == "MORFOLOGIK_RULE_EN_US":
             num_errors -= 1
 
-    # oscore
-    oscore = (160 * (score ** 6)) - (100 * (num_errors / tot) ** 2)
-
     embed = discord.Embed(
         title=f"Message analysis",
         description=f"Message analysis for {message.author.mention}",
@@ -84,7 +81,6 @@ async def messageanalysis(interaction: discord.Interaction, message: discord.Mes
     embed.add_field(name="Message sentiment", value=scores["compound"], inline=True)
     embed.add_field(name="Spelling", value=f"{round(score * 100, 1)}%", inline=True)
     embed.add_field(name="Grammar", value=f"{num_errors} errors ({round(100 * num_errors / tot)}%)")
-    embed.add_field(name="Score", value=f"{round(oscore)}")
 
     await interaction.response.send_message(embed=embed)
     
