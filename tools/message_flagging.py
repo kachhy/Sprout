@@ -5,9 +5,9 @@ flagged_messages = sqlite3.connect('flagged_messages.db')
 cursor_obj = flagged_messages.cursor()
 table_creation_query = """
     CREATE TABLE IF NOT EXISTS FLAGGED_MESSAGES (
-        Message_ID VARCHAR(19) NOT NULL,
-        Sender_ID VARCHAR(18) NOT NULL,
-        Content VARCHAR(255) NOT NULL,
+        Message_ID TEXT NOT NULL,
+        Sender_ID TEXT NOT NULL,
+        Content TEXT NOT NULL,
         Reason INT NOT NULL,
         PRIMARY KEY (Message_ID)
     );
