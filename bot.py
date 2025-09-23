@@ -42,16 +42,14 @@ async def on_ready():
     except Exception as e:
         print(f"Failed to sync commands: {e}")
 
-async def flag_message(message : discord.Message):
-    pass
-
 @bot.event
 async def on_message(message : discord.Message):
     # Simplify message for ease of analysis
     cleaned_message = "".join([c for c in message.content.strip().lower() if c.isalpha() or c == ' '])
 
     # Use profanity-check's analysis feature to determine profanity and the chance of this message being offsensive
-    profanity_chance = predict_prob(cleaned_message)[0]
+    profanity_chance = predict_prob([cleaned_message])[0]
+    print(profanity_chance)
 
     # Profanity chance threshold automatically triggers a message warning
     if profanity_chance > 0.8:
@@ -61,10 +59,12 @@ async def on_message(message : discord.Message):
     # Scan message for intent
     sentiment_scores = sentiment_analyzer.polarity_scores(cleaned_message)
     average_intent = sentiment_scores['compound']
+    print(average_intent)
     
     # Inverse sentiment (higher is worse)
-    inv_sentiment = 1 - average_intent
+    inv_sentiment = 1 - ((average_intent + 1) / 2)
     average_prof_inv = (profanity_chance + inv_sentiment) / 2
+    print(average_prof_inv)
 
     if average_prof_inv > 0.6:
         await flag_message(message, AVERAGE_SENTIMENT)
@@ -74,7 +74,6 @@ async def on_message(message : discord.Message):
 @bot.tree.context_menu(name="Message analysis")
 async def messageanalysis(interaction: discord.Interaction, message: discord.Message):
     msg = "".join([c for c in message.content.strip().lower() if c.isalpha() or c == ' '])
-
     if not len(msg.strip()):
         return
 

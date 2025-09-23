@@ -183,3 +183,5 @@ cogs/station.py
 data/neveragain.txt
 data/stupid_words.txt
 temp.png
+*.db
+*.db-journal

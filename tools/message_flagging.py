@@ -5,15 +5,15 @@ flagged_messages = sqlite3.connect('flagged_messages.db')
 cursor_obj = flagged_messages.cursor()
 table_creation_query = """
     CREATE TABLE IF NOT EXISTS FLAGGED_MESSAGES (
-        Message_ID TEXT NOT NULL,
+        Message_ID TEXT NOT NULL PRIMARY KEY,
         Sender_ID TEXT NOT NULL,
         Content TEXT NOT NULL,
-        Reason INT NOT NULL,
-        PRIMARY KEY (Message_ID)
+        Reason INT NOT NULL
     );
 """
 
 cursor_obj.execute(table_creation_query)
+flagged_messages.commit()
 
 async def flag_message(message : Message, flag : int):
     cursor_obj.execute(f"INSERT INTO FLAGGED_MESSAGES (Message_ID, Sender_ID, Content, Reason) \

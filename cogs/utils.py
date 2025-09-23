@@ -1,6 +1,7 @@
 # cogs/utils.py
 from discord.ext import commands
 from discord import app_commands
+from tools.config_db import set_moderation_channel
 import discord
 import time
 
@@ -11,6 +12,12 @@ class Utils(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.start_time = time.time()
+
+    @app_commands.command(name="setmodchannel", description="Sets the moderation channel to the channel this was sent in.")
+    @commands.has_permissions(administrator=True)
+    async def setmodchannel(self, interaction: discord.Interaction):
+        await set_moderation_channel(interaction.guild_id, interaction.channel_id)
+        await interaction.response.send_message("Set moderation channel.")
 
     @app_commands.command(name="ping", description="Shows the bot's latency.")
     async def ping(self, interaction: discord.Interaction):
