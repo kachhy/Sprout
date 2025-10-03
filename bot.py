@@ -1,4 +1,17 @@
 # bot.py
+from colorama import init, Fore, Style
+print(Fore.GREEN + """
+███████╗██████╗ ██████╗  ██████╗ ██╗   ██╗████████╗
+██╔════╝██╔══██╗██╔══██╗██╔═══██╗██║   ██║╚══██╔══╝
+███████╗██████╔╝██████╔╝██║   ██║██║   ██║   ██║   
+╚════██║██╔═══╝ ██╔══██╗██║   ██║██║   ██║   ██║   
+███████║██║     ██║  ██║╚██████╔╝╚██████╔╝   ██║   
+╚══════╝╚═╝     ╚═╝  ╚═╝ ╚═════╝  ╚═════╝    ╚═╝   
+      """)
+
+SPROUT = Fore.WHITE + "[" + Fore.GREEN + "SPROUT" + Fore.WHITE + "]"
+print(SPROUT, "Loading libraries")
+
 from tools.moderation import sentiment_analyzer, server_message_handler
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from discord.ext import commands
@@ -8,9 +21,16 @@ import asyncio
 import discord
 import os
 
+# Init colorama
+init(autoreset=True)
+
+print(SPROUT, "Loading .env")
+
 # Load environment variables from a .env file
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+
+print(SPROUT, "Setting up bot")
 
 # Set intents
 intents                 = discord.Intents.default()
@@ -18,6 +38,7 @@ intents.message_content = True
 intents.members         = True
 
 # Load the VADER sentiment analyzer and NLTK stuff
+print(SPROUT, "Loading VADER")
 grammar_tool       = language_tool_python.LanguageTool('en-US') 
 dictionary         = set([line.strip().lower() for line in open('data/words.txt').readlines()]).union(set([line.strip().lower() for line in open('data/stupid_words.txt').readlines()]))
 
@@ -26,15 +47,14 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 @bot.event
 async def on_ready():
-    print(f'Logged in as {bot.user.name} ({bot.user.id})')
-    print('------')
+    print(SPROUT, f'Logged in as {bot.user.name} ({bot.user.id})')
 
     # Sync all slash commands
     try:
         synced = await bot.tree.sync()
-        print(f"Synced {len(synced)} command(s)")
+        print(SPROUT, f"Synced {len(synced)} command(s)")
     except Exception as e:
-        print(f"Failed to sync commands: {e}")
+        print(SPROUT, f"Failed to sync commands: {e}")
 
 @bot.event
 async def on_message(message : discord.Message):
@@ -94,9 +114,9 @@ async def load_cogs():
             try:
                 # The cog name is the filename without the .py extension.
                 await bot.load_extension(f'cogs.{filename[:-3]}')
-                print(f'Loaded cog: {filename[:-3]}')
+                print(SPROUT, f'Loaded cog: {filename[:-3]}')
             except Exception as e:
-                print(f'Failed to load cog {filename[:-3]}: {e}')
+                print(SPROUT, f'Failed to load cog {filename[:-3]}: {e}')
 
 async def main():
     async with bot:
@@ -104,4 +124,5 @@ async def main():
         await bot.start(TOKEN)
 
 if __name__ == "__main__":
+    print(SPROUT, "Starting asyncio")
     asyncio.run(main())
