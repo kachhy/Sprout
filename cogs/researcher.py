@@ -26,7 +26,7 @@ class Researcher(commands.Cog):
                         color=discord.Color.blue()
                     )
                     embed.add_field(name="", value=r, inline=True)
-                    await interaction.followup.send(embed=embed)
+                    await interaction.followup.send(embed=embed, ephemeral=True)
             elif response.get("toolResponse") is not None:
                 url_string = ""
                 l = ast.literal_eval(response["toolResponse"]["messages"][-1].content)
@@ -39,7 +39,7 @@ class Researcher(commands.Cog):
                         color=discord.Color.blurple()
                     )
                     embed.add_field(name="", value=url_string[:-2], inline=True)
-                    await interaction.followup.send(embed=embed)
+                    await interaction.followup.send(embed=embed, ephemeral=True)
 
 
 async def setup(bot: commands.Bot):
