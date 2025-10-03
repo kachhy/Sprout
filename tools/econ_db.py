@@ -10,8 +10,8 @@ table_creation_query = """
     CREATE TABLE IF NOT EXISTS ECONOMY (
         server_id TEXT NOT NULL,
         user_id TEXT NOT NULL,
-        cash INTEGER DEFAULT 100,
-        bank INTEGER DEFAULT 0,
+        cash REAL DEFAULT 100.00,
+        bank REAL DEFAULT 0.00,
         PRIMARY KEY (server_id, user_id)
     );
 """
@@ -20,6 +20,7 @@ cursor_obj.execute(table_creation_query)
 config.commit()
 
 def update_cash(server_id, user_id, amount):
+    rounded_amount = round(amount, 2)
     initial_insert_query = """
         INSERT OR IGNORE INTO ECONOMY (server_id, user_id) 
         VALUES (?, ?);
@@ -31,10 +32,11 @@ def update_cash(server_id, user_id, amount):
         SET cash = cash + ?
         WHERE server_id = ? AND user_id = ?;
     """
-    cursor_obj.execute(update_query, (amount, server_id, user_id))
+    cursor_obj.execute(update_query, (rounded_amount, server_id, user_id))
     config.commit()
 
 def update_bank(server_id, user_id, amount):
+    rounded_amount = round(amount, 2)
     initial_insert_query = """
         INSERT OR IGNORE INTO ECONOMY (server_id, user_id) 
         VALUES (?, ?);
@@ -46,7 +48,7 @@ def update_bank(server_id, user_id, amount):
         SET bank = bank + ?
         WHERE server_id = ? AND user_id = ?;
     """
-    cursor_obj.execute(update_query, (amount, server_id, user_id))
+    cursor_obj.execute(update_query, (rounded_amount, server_id, user_id))
     config.commit()
 
 def get_balance(server_id, user_id):

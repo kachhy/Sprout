@@ -37,7 +37,7 @@ class Econ(commands.Cog):
                     
         if target_channel:
             embed = Embed(
-                title=f"Money!",
+                title=f"Money 💰!",
                 description=f"Everyone in the server got $10.",
                 color=discord.Color.brand_green()
             )
@@ -54,10 +54,61 @@ class Econ(commands.Cog):
             color=discord.Color.brand_green()
         )
         embed.set_thumbnail(url=interaction.user.display_avatar.url)
-        embed.add_field(name="💵 Cash", value="${}".format(balance["cash"]), inline=False)
-        embed.add_field(name="🏦 Bank", value="${}".format(balance["bank"]), inline=False)
+        embed.add_field(name="💵 Cash", value="${:,.2f}".format(balance["cash"]), inline=False)
+        embed.add_field(name="🏦 Bank", value="${:,.2f}".format(balance["bank"]), inline=False)
 
-        await interaction.response.send_message(embed=embed)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
+    @app_commands.command(name="send", description="Send cash to another user.")
+    @app_commands.describe(member="The user you want to send money to.", amount="The amount of cash to send (must be > 0).")
+    async def send_money(self, interaction: discord.Interaction, member: discord.Member, amount: app_commands.Range[float, 1]):
+        server_id = str(interaction.guild_id)
+        sender_id = str(interaction.user.id)
+        recipient_id = str(member.id)
+        rounded_amount = round(amount, 2)
+
+        if sender_id == recipient_id:
+            error_embed = discord.Embed(
+                title="❌ Transaction Failed",
+                description="You cannot send money to yourself!",
+                color=discord.Color.red()
+            )
+            return await interaction.response.send_message(embed=error_embed, ephemeral=True)
+        
+        if member.bot:
+            error_embed = discord.Embed(
+                title="❌ Transaction Failed",
+                description="You cannot send money to a bot.",
+                color=discord.Color.red()
+            )
+            return await interaction.response.send_message(embed=error_embed, ephemeral=True)
+        
+        sender_balance = get_balance(server_id, sender_id)
+        
+        if sender_balance['bank'] < amount:
+            error_embed = discord.Embed(
+                title="❌ Transaction Failed",
+                description=f"You only have **${sender_balance['bank']:,.2f}** in the bank, which is not enough to send **${rounded_amount:,.2f}**.",
+                color=discord.Color.red()
+            )
+            # Send an ephemeral response so only the sender sees the error
+            return await interaction.response.send_message(embed=error_embed, ephemeral=True)
+
+        # Perform the transaction
+        update_bank(server_id, sender_id, -rounded_amount)
+        update_bank(server_id, recipient_id, rounded_amount)
+
+        success_embed = discord.Embed(
+            title="✅ Transaction Complete",
+            description=f"You successfully sent **${rounded_amount:,.2f}** to {member.mention}!",
+            color=discord.Color.green()
+        )
+        success_embed.set_thumbnail(url=member.display_avatar.url)
+        success_embed.add_field(name="Your New Cash Balance", 
+                                value=f"${sender_balance['bank'] - rounded_amount:,.2f}", 
+                                inline=False)
+        
+        await interaction.response.send_message(embed=success_embed)
 
     # Wait until the bot is ready before starting the loop
     @tick.before_loop
