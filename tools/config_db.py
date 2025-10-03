@@ -1,3 +1,5 @@
+# tools/config_db.py
+
 from discord import Embed
 import sqlite3
 
