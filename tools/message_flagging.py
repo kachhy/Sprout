@@ -3,7 +3,7 @@
 from discord import Message
 import sqlite3
 
-flagged_messages = sqlite3.connect('flagged_messages.db')
+flagged_messages = sqlite3.connect('database.db')
 cursor_obj = flagged_messages.cursor()
 table_creation_query = """
     CREATE TABLE IF NOT EXISTS FLAGGED_MESSAGES (

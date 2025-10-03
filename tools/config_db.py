@@ -3,7 +3,7 @@
 from discord import Embed
 import sqlite3
 
-config = sqlite3.connect("modchannels.db")
+config = sqlite3.connect("database.db")
 
 cursor_obj = config.cursor()
 table_creation_query = """
@@ -15,7 +15,6 @@ table_creation_query = """
 
 cursor_obj.execute(table_creation_query)
 config.commit()
-
 
 async def get_moderation_channel(server_id : str):
     cursor_obj.execute("SELECT channel_id FROM MODCHANNELS WHERE server_id =", server_id)
