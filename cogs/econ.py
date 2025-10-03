@@ -19,7 +19,6 @@ class Econ(commands.Cog):
     # Tick happens every hour
     @tasks.loop(hours=1)
     async def tick(self):
-        print("tick")
         target_channel = None
         for guild in self.bot.guilds:
             # Update each user
